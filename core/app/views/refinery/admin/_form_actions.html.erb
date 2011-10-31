@@ -51,10 +51,10 @@
     <%= hidden_field_tag :continue_editing, false if continue_editing %>
 
     <%= link_to(cancel_button_text, cancel_url,
+                :confirm => "Are you sure you want to cancel? All changes will be lost.",
                 :title => cancel_title,
                 :id => cancel_button_id,
-                :class => "close_dialog button", 
-                :confirm => "Are you sure you want to cancel? All changes will be lost." ) unless hide_cancel %>
+                :class => "close_dialog button") unless hide_cancel %>
   </div>
   <div class='form-actions-right'>
     <%= link_to(delete_button_text, delete_url,
