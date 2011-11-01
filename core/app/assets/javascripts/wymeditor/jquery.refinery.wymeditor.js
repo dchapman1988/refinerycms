@@ -1182,11 +1182,14 @@ WYMeditor.editor.prototype.switchTo = function(selectionOrNode,sType) {
   // we have a node.
   var html = $(selectionOrNode).html();
   var newNode = this._doc.createElement(sType);
+  var klass = $(selectionOrNode).attr('class');
 
   // copy across the css class names.
-  $.each($(selectionOrNode).attr('class').split(" "), function(index, className) {
-    $(newNode).addClass(className);
-  });
+  if(typeof klass !== 'undefined'){
+      $.each($(selectionOrNode).attr('class').split(" "), function(index, className) {
+        $(newNode).addClass(className);
+      });
+  }
 
   selectionOrNode.parentNode.replaceChild(newNode,selectionOrNode);
 
@@ -1394,6 +1397,7 @@ WYMeditor.editor.prototype.dialog = function( dialogType ) {
       if (!wym._selected_image) {
         parent_node._id_before_replaceable = parent_node.id;
         parent_node.id = '' + this._current_unique_stamp;
+        $(parent_node).attr("_id_before_replaceable", parent_node._id_before_replaceable);
       }
 
       if (dialogType != WYMeditor.DIALOG_PASTE && dialogType != WYMeditor.DIALOG_TABLE) {
@@ -1781,7 +1785,13 @@ WYMeditor.INIT_DIALOG = function(wym, selected, isIframe) {
   // focus first textarea or input type text element
   dialog.find('input[type=text], textarea').first().focus();
 
+  // init close_dialog when user clicks on cancel button
   doc.find('body').addClass('wym_iframe_body').find('#cancel_button').add(dialog.find('.close_dialog')).click(function(e){
+    wym.close_dialog(e, true);
+  });
+
+  // init close_dialog when user clicks on small x icon at the top of dialog
+  $('.ui-dialog-titlebar .ui-dialog-titlebar-close').click(function(e){
     wym.close_dialog(e, true);
   });
 
@@ -1932,9 +1942,12 @@ WYMeditor.editor.prototype.close_dialog = function(e, cancelled) {
     if ((span = $(this._doc.body).find('span#' + this._current_unique_stamp)).length > 0) {
       span.parent().html(span.parent().html().replace(new RegExp(["<span(.+?)", span.attr('id'), "(.+?)<\/span>"].join("")), span.html()));
     }
-    (remove_id = $(this._doc.body).find('#' + this._current_unique_stamp))
-      .attr('id', (remove_id.attr('_id_before_replaceable') || ""))
-      .replaceWith(remove_id.html());
+    // https://github.com/resolve/refinerycms/issues/888
+    if (node = $(this._doc.body).find('#' + this._current_unique_stamp)) {
+      node.attr("id", (node.attr('_id_before_replaceable') || ""));
+      node.removeAttr("_id_before_replaceable");
+    }
+
     if (this._undo_on_cancel == true) {
       this._exec("undo");
     }
@@ -2478,7 +2491,7 @@ WYMeditor.XhtmlValidator = {
         "readonly":/^(readonly)$/,
         "size":/^(\d)+$/,
         "3":"src",
-        "type":/^(button|checkbox|file|hidden|image|password|radio|reset|submit|text|tel|search|url|email|datetime|date|month|week|time|datetime-local|number|range|color)$/,
+        "type":/^(button|checkbox|file|hidden|image|password|radio|reset|submit|text|tel|search|url|email|datetime|date|month|week|time|datetime-local|number|range|color|placeholder)$/,
         "4":"value"
       },
       "inside":"form"
@@ -5238,3 +5251,4 @@ WYMeditor.WymClassSafari.prototype.getTagForStyle = function(style) {
 RegExp.escape = function(text) {
   return text.replace(/[-[\]{}()*+?.,\\^$|#\s]/g, "\\$&");
 };
+
