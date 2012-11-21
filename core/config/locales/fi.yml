@@ -12,9 +12,6 @@ fi:
         description: Refineryn dialogipalikka
     welcome:
       there_are_no_users: "Käyttäjiä ei vielä ole, joten asennetaan sinut ensin."
-      remember_admin_location: "Muista, että Refineryn ylläpito on seuraavassa osoitteessa:"
-      lets_start: "Tehdään sinulle käyttäjä, että voit kirjautua..."
-      continue: Jatka...
     crudify:
       created: '%{what} lisättiin onnistuneesti.'
       updated: '%{what} päivitettiin onnistuneesti.'
@@ -53,13 +50,17 @@ fi:
         current: Nykyinen tiedosto
       search:
         button_text: Etsi
-        results_for: "Hakutulokset haulle '%{query}'"
+        results_for_html: "Hakutulokset haulle &#8216;<em>%{query}</em>&#8217;"
         no_results: 'Valitettavasti mitään ei löytynyt'
       delete:
         message: "Oletko varma, että haluat poistaa sisältöesineen '%{title}'?"
       error_messages:
         problems_in_following_fields: Seuraavissa kentissä oli virheitä
       help: apua
+      form_advanced_options_menu:
+        advanced_options: Lisäasetukset
+        toggle_advanced_options: "Näe metatieto- ja valikko-ominaisuudet"
+        save_as_draft: Tallenna luonnoksena
     message:
       close: Sulje
       close_this_message: Sulje tämä viesti
@@ -68,9 +69,12 @@ fi:
     footer:
       copyright: "Copyright © %{year} %{site_name}"
     no_script:
-      enable_javascript: Sivuston täydelliseen toimimiseen vaaditaan JavaScript- tuen päälle pistäminen
+      enable_javascript_html: Sivuston täydelliseen toimimiseen vaaditaan JavaScript- tuen päälle pistäminen
       here_are: Täällä on
-      instructions_enable_javascript: ohjeet JavaScriptin päälle pistämiseen selaimessasi
+      instructions_enable_javascript_html: ohjeet JavaScriptin päälle pistämiseen selaimessasi
   time:
     formats:
       short: "%A, %d %B %Y"
+  will_paginate:
+    previous_label: "&laquo;"
+    next_label: "&raquo;"

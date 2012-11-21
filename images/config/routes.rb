@@ -1,12 +1,9 @@
-::Refinery::Application.routes.draw do
+Refinery::Core::Engine.routes.draw do
+  get '/system/images/*dragonfly', :to => Dragonfly[:refinery_images]
 
-  match '/system/images/*dragonfly', :to => Dragonfly[:images]
-
-  scope(:path => 'refinery', :as => 'refinery_admin', :module => 'refinery/admin') do
+  namespace :admin, :path => 'refinery' do
     resources :images, :except => :show do
-      collection do
-        get :insert
-      end
+      get :insert, :on => :collection
     end
   end
 end

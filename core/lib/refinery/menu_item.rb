@@ -1,17 +1,36 @@
 module Refinery
   class MenuItem < HashWithIndifferentAccess
 
-    (ATTRIBUTES = [:id, :title, :parent_id, :lft, :rgt, :depth, :url, :menu_id, :menu_match, :type]).each do |attribute|
-      class_eval %{
-        def #{attribute}
-          @#{attribute} ||= self[:#{attribute}]
-        end
+    class << self
+      def attributes
+        [:title, :parent_id, :lft, :rgt, :depth, :url, :menu, :menu_match]
+      end
 
-        def #{attribute}=(attr)
-          @#{attribute} = attr
+      def apply_attributes!
+        attributes.each do |attribute|
+          class_eval %{
+            def #{attribute}
+              @#{attribute} ||= self[:#{attribute}]
+            end
+          } unless self.respond_to?(attribute)
+          class_eval %{
+            def #{attribute}=(attr)
+              @#{attribute} = attr
+            end
+          } unless self.respond_to?(:"#{attribute}=")
         end
-      }
+      end
     end
+
+    def original_id
+      @original_id ||= self[:id]
+    end
+
+    def original_type
+      @original_type ||= self[:type]
+    end
+
+    apply_attributes!
 
     def ancestors
       return @ancestors if @ancestors
@@ -24,7 +43,7 @@ module Refinery
 
     def children
       @children ||= if has_children?
-        menu.select{|item| item.type == type && item.parent_id == id}
+        menu.select { |item| item.original_type == original_type && item.parent_id == original_id }
       else
         []
       end
@@ -32,7 +51,7 @@ module Refinery
 
     def descendants
       @descendants ||= if has_descendants?
-        menu.select{|item| item.type == type && item.lft > lft && item.rgt < rgt}
+        menu.select{|item| item.original_type == original_type && item.lft > lft && item.rgt < rgt}
       else
         []
       end
@@ -51,25 +70,20 @@ module Refinery
     def inspect
       hash = {}
 
-      ATTRIBUTES.each do |attribute|
+      self.class.attributes.each do |attribute|
         hash[attribute] = self[attribute]
       end
 
-      hash
-    end
-
-    def menu
-      ::Refinery.menus[menu_id]
+      hash.inspect
     end
 
     def parent
-      @parent ||= (menu.detect{|item| item.type == type && item.id == parent_id} if has_parent?)
+      @parent ||= (menu.detect{|item| item.original_type == original_type && item.original_id == parent_id} if has_parent?)
     end
 
     def siblings
-      @siblings ||= ((has_parent? ? children : menu.roots) - [self])
+      @siblings ||= ((has_parent? ? parent.children : menu.roots) - [self])
     end
     alias_method :shown_siblings, :siblings
-
   end
 end

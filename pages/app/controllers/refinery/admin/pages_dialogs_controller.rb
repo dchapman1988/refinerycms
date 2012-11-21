@@ -1,19 +1,23 @@
 require 'net/http'
 
-module ::Refinery
+module Refinery
   module Admin
     class PagesDialogsController < ::Refinery::Admin::DialogsController
 
+      helper :'refinery/admin/pages'
+
       def link_to
-        @pages = ::Refinery::Page.page(params[:page]).
-                      where(:parent_id => nil).
-                      order('position').
-                      per(Page.per_page(true))
+        # Get the switch_local variable to determine the locale we're currently editing
+        # Set up Globalize with our current locale
+        Globalize.locale = params[:switch_locale] || Refinery::I18n.default_locale
+
+        @pages = ::Refinery::Page.roots.paginate(:page => params[:page], :per_page => ::Refinery::Page.per_page(true))
+
+        @pages = @pages.with_globalize
 
         if ::Refinery::Plugins.registered.names.include?('refinery_files')
-            @resources = Resource.page(params[:resource_page]).
-                                order('created_at DESC').
-                                per(Resource.per_page(true))
+            @resources = Resource.paginate(:page => params[:resource_page], :per_page => Resource.per_page(true)).
+                                  order('created_at DESC')
 
           # resource link
           if params[:current_link].present?
@@ -43,42 +47,6 @@ module ::Refinery
           @web_address_area_selected = (@web_address_text != "http://")
           @email_address_area_selected = @email_address_text.present?
           @resource_area_selected = is_resource_link
-        end
-      end
-
-      def test_url
-        begin
-          timeout(5) do
-            unless params[:url].blank?
-              url = URI.parse(params[:url])
-              if url.host.nil? && params[:url].start_with?('/')
-                url.host = URI.parse(request.url).host
-              end
-
-              result = case Net::HTTP.get_response(url)
-                when Net::HTTPSuccess, Net::HTTPRedirection
-                  'success'
-                else
-                  'failure'
-                end
-
-              render :json => {:result => result}
-            end
-          end
-        rescue
-          render :json => {:result => 'failure'}
-        end
-      end
-
-      def test_email
-        unless params[:email].blank?
-          valid = params[:email] =~ /^([^@\s]+)@((?:[-a-z0-9]+\.)+[a-z]{2,})$/i
-
-          render :json => if valid
-            {:result => 'success'}
-          else
-            {:result => 'failure'}
-          end
         end
       end
 

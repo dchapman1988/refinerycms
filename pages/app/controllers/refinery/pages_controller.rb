@@ -1,11 +1,14 @@
 module Refinery
   class PagesController < ::ApplicationController
+    before_filter :find_page, :set_canonical, :except => [:preview]
+    before_filter :find_page_for_preview, :only => [:preview]
+
     # Save whole Page after delivery
     after_filter { |c| c.write_cache? }
 
     # This action is usually accessed with the root path, normally '/'
     def home
-      error_404 unless (@page = ::Refinery::Page.where(:link_url => '/').first).present?
+      render_with_templates?
     end
 
     # This action can be accessed normally, or as nested pages.
@@ -19,40 +22,91 @@ module Refinery
     #   GET /about/mission
     #
     def show
-      @page ||= ::Refinery::Page.find("#{params[:path]}/#{params[:id]}".split('/').last)
-
-      if @page.try(:live?) || (refinery_user? && current_refinery_user.authorized_plugins.include?("refinery_pages"))
-        # if the admin wants this to be a "placeholder" page which goes to its first child, go to that instead.
-        if @page.skip_to_first_child && (first_live_child = @page.children.order('lft ASC').live.first).present?
-          redirect_to first_live_child.url and return
-        elsif @page.link_url.present?
-          redirect_to @page.link_url and return
+      if current_user_can_view_page?
+        if should_skip_to_first_child?
+          redirect_to refinery.url_for(first_live_child.url)
+        elsif page.link_url.present?
+          redirect_to page.link_url
+        else
+          if should_redirect_to_friendly_url?
+            redirect_to refinery.url_for(page.url), :status => 301
+          else
+            render_with_templates?
+          end
         end
       else
         error_404
       end
+    end
 
-      render_with_templates?
+    def preview
+      render_with_templates?(:action => :show)
     end
 
   protected
-    def render_with_templates?
-      layouts = ::Refinery::Setting.find_or_set(:use_layout_templates, false, :scoping => 'pages')
-      views   = ::Refinery::Setting.find_or_set(:use_view_templates, false, :scoping => 'pages')
 
-      render_options = {}
-      render_options[:layout] = @page.layout_template if layouts && @page.layout_template.present?
-      render_options[:action] = @page.view_template if views && @page.view_template.present?
+    def requested_friendly_id
+      "#{params[:path]}/#{params[:id]}".split('/').last
+    end
 
+    def should_skip_to_first_child?
+      page.skip_to_first_child && first_live_child
+    end
+
+    def should_redirect_to_friendly_url?
+      requested_friendly_id != page.friendly_id || params[:path].present? && params[:path].match(page.root.slug).nil?
+    end
+
+    def current_user_can_view_page?
+      page.live? || current_refinery_user_can_access?("refinery_pages")
+    end
+
+    def current_refinery_user_can_access?(plugin)
+      refinery_user? && current_refinery_user.authorized_plugins.include?(plugin)
+    end
+
+    def first_live_child
+      page.children.order('lft ASC').live.first
+    end
+
+    def find_page_for_preview
+      if page(fallback_to_404 = false)
+        # Preview existing pages
+        @page.attributes = view_context.sanitize_hash params[:page]
+      elsif params[:page]
+        # Preview a non-persisted page
+        @page = Page.new params[:page]
+      end
+    end
+
+    def find_page(fallback_to_404 = true)
+      @page ||= case action_name
+                when "home"
+                  Refinery::Page.where(:link_url => '/').first
+                when "show", "preview"
+                  Refinery::Page.find_by_path_or_id(params[:path], params[:id])
+                end
+      @page || (error_404 if fallback_to_404)
+    end
+
+    alias_method :page, :find_page
+
+    def render_with_templates?(render_options = {})
+      if Refinery::Pages.use_layout_templates && page.layout_template.present?
+        render_options[:layout] = page.layout_template
+      end
+      if Refinery::Pages.use_view_templates && page.view_template.present?
+        render_options[:action] = page.view_template
+      end
       render render_options if render_options.any?
     end
 
+    def set_canonical
+      @canonical = refinery.url_for @page.canonical if @page.present?
+    end
+
     def write_cache?
-      if ::Refinery::Setting.find_or_set(:cache_pages_full, {
-        :restricted => true,
-        :value => false,
-        :form_value_type => 'check_box'
-      })
+      if Refinery::Pages.cache_pages_full && !refinery_user?
         cache_page(response.body, File.join('', 'refinery', 'cache', 'pages', request.path).to_s)
       end
     end

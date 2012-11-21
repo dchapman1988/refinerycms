@@ -1,6 +1,6 @@
-module ::Refinery
+module Refinery
   module Admin
-    class DashboardController < ::Admin::BaseController
+    class DashboardController < Refinery::AdminController
 
       def index
         @recent_activity = []
@@ -8,10 +8,9 @@ module ::Refinery
         ::Refinery::Plugins.active.each do |plugin|
           begin
             plugin.activity.each do |activity|
-              @recent_activity << activity.class.where(activity.conditions).
+              @recent_activity += activity.klass.where(activity.conditions).
                                                  order(activity.order).
-                                                 limit(activity.limit).
-                                                 all
+                                                 limit(activity.limit)
             end
           rescue
             logger.warn "#{$!.class.name} raised while getting recent activity for dashboard."
@@ -20,19 +19,14 @@ module ::Refinery
           end
         end
 
-        @recent_activity = @recent_activity.flatten.compact.sort { |x,y|
-          y.updated_at <=> x.updated_at
-        }.first(activity_show_limit=::Refinery::Setting.find_or_set(:activity_show_limit, 7))
+        @recent_activity = @recent_activity.sort_by(&:updated_at).reverse.
+                           first(Refinery::Dashboard.activity_show_limit)
 
-        @recent_inquiries = defined?(Inquiry) ? Inquiry.latest(activity_show_limit) : []
-      end
-
-      def disable_upgrade_message
-        ::Refinery::Setting.set(:show_internet_explorer_upgrade_message, {
-          :value => false,
-          :scoping => 'refinery'
-        })
-        render :nothing => true
+        @recent_inquiries = if Refinery::Plugins.active.find_by_name("refinerycms_inquiries")
+          Refinery::Inquiries::Inquiry.latest(Refinery::Dashboard.activity_show_limit)
+        else
+          []
+        end
       end
 
     end

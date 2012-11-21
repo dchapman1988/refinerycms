@@ -12,9 +12,6 @@ bg:
         description: Добавка за диалози за Refinery
     welcome:
       there_are_no_users: "Все още няма потребители, затова ще създадем първо Вашия."
-      remember_admin_location: "Запомнете, че административната зона на Refinery се намира в:"
-      lets_start: Добре, нека да направим настройките Ви за вход...
-      continue: Продължение...
     crudify:
       created: 'Елемента "%{what}" бе създаден успешно.'
       updated: 'Елемента "%{what}" бе актуализиран успешно.'
@@ -40,8 +37,8 @@ bg:
         delete: Изтриване
         close: Затваряне
       image_picker:
-        none_selected: 'Все още няма избран(а) %(what). Моля, цъкнете тук, за да добавите един(а).'
-        remove_current: 'Премахване на текущия(ата) %{what}'
+        none_selected: Все още няма избрано изображение. Моля, цъкнете тук, за да добавите едно.
+        remove_current: Премахване на текущото изображение
         change: Цъкнете тук, за да изберете изображение
         show: Показване
       resource_picker:
@@ -53,13 +50,17 @@ bg:
         current: Текущ файл
       search:
         button_text: Търсене
-        results_for: 'Резултати от търсене на "%{query}"'
+        results_for_html: "Резултати от търсене на &#8216;<em>%{query}</em>&#8217;"
         no_results: 'За съжаление нищо не бе намерено'
       delete:
         message: 'Сигурни ли сте, че искате да изтриете "%{title}"?'
       error_messages:
         problems_in_following_fields: Има проблем със следните полета
       help: помощ
+      form_advanced_options_menu:
+        advanced_options: Разширени настройки
+        toggle_advanced_options: Достъп до настройките за етикета "meta" и менюто
+        save_as_draft: Запис като чернова
     message:
       close: Затваряне
       close_this_message: Затваряне на това съобщение
@@ -68,12 +69,12 @@ bg:
     footer:
       copyright: "© %{year} %{site_name} Всички права запазени."
     no_script:
-      enable_javascript: За да работи напълно тази страница е необходим JavaScript.
+      enable_javascript_html: За да работи напълно тази страница е необходим JavaScript.
       here_are: Ето
-      instructions_enable_javascript: инструкции, как да разрешите използването на JavaScript във Вашия уеб браузър.
+      instructions_enable_javascript_html: инструкции, как да разрешите използването на JavaScript във Вашия уеб браузър.
   time:
     formats:
       short: "%A, %d %B %Y"
-  pagination:
-    next: "&raquo;"
-    previous: "&laquo;"
+  will_paginate:
+    previous_label: "&laquo;"
+    next_label: "&raquo;"

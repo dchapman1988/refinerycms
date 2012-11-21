@@ -11,8 +11,8 @@ sk:
         form:
           download_current: Stiahnuť vybraný súbor
           or: alebo
-          replace: " nahradiť tímto..."
-          maximum_file_size: Maximálna veľkosť súboru je %{megabytes} MB.
+          replace: " nahradiť týmto..."
+          maximum_file_size: Maximálna veľkosť súboru je %{bytes}.
         resource:
           download: Stiahnuť súbor (%{size})
         actions:

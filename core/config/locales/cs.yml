@@ -9,9 +9,6 @@ cs:
         description: Refinery dialogs plugin
     welcome:
       there_are_no_users: Nemáme žádné uživatele, proto nyní jednoho vytvoříme.
-      remember_admin_location: "Zapamatujte si adresu k Refinery administraci:"
-      lets_start: Nejdříve vytvoříme uživatelský účet, ať se máme jak přihlásit...
-      continue: Pokračovat...
     crudify:
       created: '%{what} byl úspěšně vytvořen.'
       updated: '%{what} byl úspěšně aktualizován.'
@@ -39,8 +36,8 @@ cs:
         next: Další
         close: Zavřít
       image_picker:
-        none_selected: Zatím není vybrán žádný %{what}, klikněte zde pro přidání.
-        remove_current: Zmazat vybraný %{what}
+        none_selected: Zatím není vybrán žádný obrázek, klikněte zde pro přidání.
+        remove_current: Smazat vybraný obrázek
         change: Klikněte zde pro vybrání obrázku
         show: Zobrazit
       resource_picker:
@@ -52,13 +49,17 @@ cs:
         current: Vybraný soubor
       search:
         button_text: Hledat
-        results_for: Výsledky hledání pro '%{query}'
+        results_for_html: "Výsledky hledání pro &#8216;<em>%{query}</em>&#8217;"
         no_results: Žádné záznamy nenalezeny
       delete:
         message: Opravdu chcete smazat '%{title}'?
       error_messages:
         problems_in_following_fields: Vyskytl se problém s těmito údaji
       help: nápověda
+      form_advanced_options_menu:
+        advanced_options: Zpřístupní rozšířené nastavení ako například nastavení menu a meta tagů
+        toggle_advanced_options: Rozšířené nastavení
+        save_as_draft: Uložit jako pracovní verzi
     message:
       close: Zavřít
       close_this_message: Zavřít zprávu
@@ -67,12 +68,12 @@ cs:
     footer:
       copyright: Copyright © %{year} %{site_name}
     no_script:
-      enable_javascript: Pro plnou funkčnost tohoto webu je nutno povolit JavaScript.
+      enable_javascript_html: Pro plnou funkčnost tohoto webu je nutno povolit JavaScript.
       here_are: Tady jsou
-      instructions_enable_javascript: instrukce jak povolit JavaScript ve vašem prohlížeči
+      instructions_enable_javascript_html: instrukce jak povolit JavaScript ve vašem prohlížeči
   time:
     formats:
       short: "%A, %d %B %Y"
-  pagination:
-    next: "&raquo;"
-    previous: "&laquo;"
+  will_paginate:
+    previous_label: "&laquo;"
+    next_label: "&raquo;"

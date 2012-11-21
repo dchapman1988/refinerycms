@@ -9,9 +9,6 @@ zh-TW:
         description: Refinery 對話方框插件
     welcome:
       there_are_no_users: 目前沒有任何的使用者, 我們會先替您進行設定.
-      remember_admin_location: "記住您的 Refinery 管理者頁面在:"
-      lets_start: 好了, 讓我們協助您設定, 然後您就能登入了...
-      continue: 繼續...
     crudify:
       created: '%{what} 成功地加入.'
       updated: '%{what} 成功地更新.'
@@ -50,13 +47,17 @@ zh-TW:
         current: 目前檔案
       search:
         button_text: 搜尋
-        results_for: 搜尋 '%{query}' 的結果
+        results_for_html: "搜尋 &#8216;<em>%{query}</em>&#8217; 的結果"
         no_results: 抱歉, 沒有任何搜尋結果
       delete:
         message: 確定要移除 '%{title}' 嗎?
       error_messages:
         problems_in_following_fields: 以下幾個欄位出現問題
       help: 求助
+      form_advanced_options_menu:
+        advanced_options: 進階選項
+        toggle_advanced_options: 存取 meta 標籤設定與選單選項
+        save_as_draft: 儲存草稿
     message:
       close: 關閉
       close_this_message: 關閉這個訊息
@@ -65,12 +66,12 @@ zh-TW:
     footer:
       copyright: Copyright © %{year} %{site_name}
     no_script:
-      enable_javascript: 您必須要啟動支援 JavaScript 才能夠看到這個頁面提供的所有功能.
+      enable_javascript_html: 您必須要啟動支援 JavaScript 才能夠看到這個頁面提供的所有功能.
       here_are: 這裡是
-      instructions_enable_javascript: 如果讓您的瀏覽器啟動支援 JavaScript 的說明
+      instructions_enable_javascript_html: 如果讓您的瀏覽器啟動支援 JavaScript 的說明
   time:
     formats:
       short: "%A, %d %B %Y"
-  pagination:
-    next: "&raquo;"
-    previous: "&laquo;"
+  will_paginate:
+    previous_label: "&laquo;"
+    next_label: "&raquo;"

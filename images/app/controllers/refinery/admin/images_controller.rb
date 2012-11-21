@@ -1,6 +1,6 @@
-module ::Refinery
+module Refinery
   module Admin
-    class ImagesController < ::Admin::BaseController
+    class ImagesController < ::Refinery::AdminController
 
       crudify :'refinery/image',
               :order => "created_at DESC",
@@ -12,14 +12,14 @@ module ::Refinery
       def new
         @image = ::Refinery::Image.new if @image.nil?
 
-        @url_override = main_app.refinery_admin_images_path(:dialog => from_dialog?)
+        @url_override = refinery.admin_images_path(:dialog => from_dialog?)
       end
 
       # This renders the image insert dialog
       def insert
         self.new if @image.nil?
 
-        @url_override = main_app.refinery_admin_images_path(request.query_parameters.merge(:insert => true))
+        @url_override = refinery.admin_images_path(request.query_parameters.merge(:insert => true))
 
         if params[:conditions].present?
           extra_condition = params[:conditions].split(',')
@@ -44,7 +44,7 @@ module ::Refinery
             @images << (@image = ::Refinery::Image.create(params[:image]))
           else
             params[:image][:image].each do |image|
-              @images << (@image = ::Refinery::Image.create(:image => image))
+              @images << (@image = ::Refinery::Image.create({:image => image}.merge(params[:image].except(:image))))
             end
           end
         rescue Dragonfly::FunctionManager::UnableToHandle
@@ -53,12 +53,13 @@ module ::Refinery
         end
 
         unless params[:insert]
-          if @images.all?{|i| i.valid?}
-            flash.notice = t('created', :scope => 'refinery.crudify', :what => "'#{@images.collect{|i| i.title}.join("', '")}'")
-            unless from_dialog?
-              redirect_to main_app.url_for(:action => 'index')
+          if @images.all?(&:valid?)
+            flash.notice = t('created', :scope => 'refinery.crudify', :what => "'#{@images.map(&:title).join("', '")}'")
+            if from_dialog?
+              @dialog_successful = true
+              render :nothing => true, :layout => true
             else
-              render :text => "<script>parent.window.location = '#{main_app.refinery_admin_images_path}';</script>"
+              redirect_to refinery.admin_images_path
             end
           else
             self.new # important for dialogs
@@ -66,13 +67,48 @@ module ::Refinery
           end
         else
           # if all uploaded images are ok redirect page back to dialog, else show current page with error
-          if @images.all?{|i| i.valid?}
+          if @images.all?(&:valid?)
             @image_id = @image.id if @image.persisted?
             @image = nil
 
-            redirect_to main_app.insert_refinery_admin_images_path(request.query_parameters)
-          else
             self.insert
+          end
+        end
+      end
+
+      def update
+        attributes_before_assignment = @image.attributes
+        @image.attributes = params[:image]
+        if @image.valid? && @image.save
+          flash.notice = t(
+            'refinery.crudify.updated',
+            :what => "'#{@image.title}'"
+          )
+
+          unless from_dialog?
+            unless params[:continue_editing] =~ /true|on|1/
+              redirect_back_or_default refinery.admin_images_path
+            else
+              unless request.xhr?
+                redirect_to :back
+              else
+                render :partial => '/refinery/message'
+              end
+            end
+          else
+            self.index
+            @dialog_successful = true
+            render :index
+          end
+        else
+          @thumbnail = Image.find params[:id]
+          unless request.xhr?
+            render :action => 'edit'
+          else
+            render :partial => '/refinery/admin/error_messages', :locals => {
+                     :object => @image,
+                     :include_object_name => true
+                   }
           end
         end
       end
@@ -85,19 +121,18 @@ module ::Refinery
         @update_image = params[:update_image]
         @thumbnail = params[:thumbnail]
         @callback = params[:callback]
+        @multiple = params[:multiple]
         @conditions = params[:conditions]
       end
 
       def change_list_mode_if_specified
-        if action_name == 'index' and
-           params[:view].present? and
-           ::Refinery::Setting.get(:image_views).include?(params[:view].to_sym)
-          ::Refinery::Setting.set(:preferred_image_view, params[:view])
+        if action_name == 'index' && params[:view].present? && Refinery::Images.image_views.include?(params[:view].to_sym)
+           Refinery::Images.preferred_image_view = params[:view]
         end
       end
 
       def paginate_images
-        @images = @images.page(params[:page]).per(Image.per_page(from_dialog?, !@app_dialog))
+        @images = @images.paginate(:page => params[:page], :per_page => Image.per_page(from_dialog?, !@app_dialog))
       end
 
       def restrict_controller

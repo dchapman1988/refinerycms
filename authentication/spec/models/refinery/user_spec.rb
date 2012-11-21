@@ -3,8 +3,8 @@ require 'spec_helper'
 module Refinery
   describe User do
 
-    let(:user) { Factory(:user) }
-    let(:refinery_user) { Factory(:refinery_user) }
+    let(:user) { FactoryGirl.create(:user) }
+    let(:refinery_user) { FactoryGirl.create(:refinery_user) }
 
     context "Roles" do
       context "add_role" do
@@ -53,7 +53,7 @@ module Refinery
       # module so those validations are not tested here
       let(:attr) do
         {
-          :username => "RefineryCMS",
+          :username => "Refinery CMS",
           :email => "refinery@cms.com",
           :password => "123456",
           :password_confirmation => "123456"
@@ -68,6 +68,11 @@ module Refinery
         User.create!(attr)
         User.new(attr.merge(:email => "another@email.com")).should_not be_valid
       end
+
+      it "rejects duplicate usernames regardless of case" do
+        User.create!(attr)
+        User.new(attr.merge(:username => attr[:username].upcase, :email => "another@email.com")).should_not be_valid
+      end
     end
 
     describe ".find_for_database_authentication" do
@@ -78,9 +83,9 @@ module Refinery
     end
 
     describe "#can_delete?" do
-      let(:user_not_persisted) { Factory.build(:refinery_user) }
+      let(:user_not_persisted) { FactoryGirl.build(:refinery_user) }
       let(:super_user) do
-        super_user = Factory(:refinery_user)
+        super_user = FactoryGirl.create(:refinery_user)
         super_user.add_role(:superuser)
         super_user
       end
@@ -112,6 +117,36 @@ module Refinery
 
         it "if all conditions return true" do
           super_user.can_delete?(refinery_user).should be_true
+        end
+      end
+    end
+
+    describe "#can_edit?" do
+      let(:user_not_persisted) { FactoryGirl.build(:refinery_user) }
+      let(:super_user) do
+        super_user = FactoryGirl.create(:refinery_user)
+        super_user.add_role(:superuser)
+        super_user
+      end
+      let(:user_persisted) { FactoryGirl.create(:refinery_user)}
+
+      context "won't allow to edit" do
+        it "non-persisted user record" do
+          refinery_user.can_edit?(user_not_persisted).should be_false
+        end
+
+        it "user is not a super user" do
+          refinery_user.can_edit?(user_persisted).should be_false
+        end
+      end
+
+      context "allows to edit" do
+        it "when I am a user super" do
+          super_user.can_edit?(user_persisted).should be_true
+        end
+
+        it "if all conditions return true" do
+          super_user.can_edit?(refinery_user).should be_true
         end
       end
     end
@@ -154,24 +189,35 @@ module Refinery
     end
 
     describe "#create_first" do
-      before { user.create_first }
-
-      it "have a refinery role" do
-        user.roles.collect(&:title).should include("Refinery")
+      let(:first_user) do
+        first = FactoryGirl.build(:user)
+        first.create_first
+        first
       end
 
-      it "have a superuser role" do
-        user.roles.collect(&:title).should include("Superuser")
+      it "adds refinery role" do
+        first_user.roles.collect(&:title).should include("Refinery")
+      end
+
+      it "adds superuser role" do
+        first_user.roles.collect(&:title).should include("Superuser")
+      end
+
+      it "adds registered plugins" do
+        first_user.plugins.collect(&:name).should eq(
+          ["refinery_users", "refinery_dashboard", "refinery_images",
+           "refinery_files", "refinery_pages"]
+        )
       end
 
       it "returns true on success" do
-        user.stub(:valid?).and_return(true)
-        user.create_first.should == true
+        first_user.stub(:valid?).and_return(true)
+        first_user.create_first.should == true
       end
 
       it "returns false on failure" do
-        user.stub(:valid?).and_return(false)
-        user.create_first.should == false
+        first_user.stub(:valid?).and_return(false)
+        first_user.create_first.should == false
       end
     end
 

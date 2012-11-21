@@ -9,9 +9,6 @@ it:
         description: Refinery dialogs plugin
     welcome:
       there_are_no_users: "Non ci sono ancora utenti registrati, occorre crearne uno."
-      remember_admin_location: "Ricorda che l'area di amministrazione di Refinery è:"
-      lets_start: "Va bene! Impostiamo un utente in modo da poter accedere..."
-      continue: "Continuare..."
     crudify:
       created: "%{what} creato con successo"
       updated: "%{what} modificato con successo"
@@ -58,13 +55,17 @@ it:
         name: Aggiungi File
       search:
         button_text: Cerca
-        results_for: "Risultati della ricerca per '%{query}'"
+        results_for_html: "Risultati della ricerca per &#8216;<em>%{query}</em>&#8217;"
         no_results: "Spiacenti, nessun risultato trovato"
       delete:
         message: "Sei sicuro di voler eliminare '%{title}'?"
       error_messages:
         problems_in_following_fields: "È necessario risolvere i seguenti errori"
       help: aiuto
+      form_advanced_options_menu:
+        advanced_options: Mostra/nascondi opzioni avanzate
+        toggle_advanced_options: Cliccare per accedere alle impostazioni dei meta tags e del menu.
+        save_as_draft: Salva come bozza
     message:
       close: Fine
       close_this_message: Chiudi questo messaggio
@@ -73,9 +74,9 @@ it:
     footer:
       copyright: "Tutti i diritti sono riservati © %{year} %{site_name}"
     no_script:
-      enable_javascript: È necessario che JavaScript sia abilitato per poter visualizzare correttamente questa pagina.
+      enable_javascript_html: È necessario che JavaScript sia abilitato per poter visualizzare correttamente questa pagina.
       here_are: ""
-      instructions_enable_javascript: Istruzioni su come attivare JavaScript nel tuo browser
-  pagination:
-    next: "&raquo;"
-    previous: "&laquo;"
+      instructions_enable_javascript_html: Istruzioni su come attivare JavaScript nel tuo browser
+  will_paginate:
+    previous_label: "&laquo;"
+    next_label: "&raquo;"

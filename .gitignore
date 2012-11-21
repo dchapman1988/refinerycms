@@ -5,6 +5,8 @@ db/*.sqlite3-journal
 *.log
 tmp
 tmp/**/*
+pkg
+spec/dummy
 
 # Documentation
 doc/api
@@ -50,6 +52,7 @@ nbproject
 
 # Rubinius
 *.rbc
+*.rbx
 
 # Vim
 *.swp
@@ -71,18 +74,18 @@ capybara-*html
 .sass-cache
 .sass-cache/*
 
-#rvm
+# rvm
 .rvmrc
 .rvmrc.*
 
-# REFINERY CMS DEVELOPMENT ====================================================
-# Always keep this section at the bottom.
+# rbenv
+.rbenv-version
 
-config/database.yml
-config/rackspace_cloudfiles.yml
-your_*.*
-db/schema.rb
-public/refinery
-config/ideal_load_path
+# Sprockets
+public/assets
 
-# END REFINERY CMS DEVELOPMENT =================================================
+#Gemfile's lock file
+Gemfile.lock
+
+# Local Gemfile for developing without sharing dependencies
+.gemfile

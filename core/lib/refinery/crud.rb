@@ -18,18 +18,18 @@ module Refinery
   module Crud
 
     def self.default_options(model_name)
-      singular_name = model_name.to_s.split('/').last
-      class_name = "::#{model_name.to_s.camelize.gsub('/', '::')}".gsub('::::', '::')
-      plural_name = singular_name.to_s.gsub('/', '_').pluralize
+      class_name = "#{model_name.to_s.camelize.gsub('/', '::')}".gsub('::::', '::')
       this_class = class_name.constantize.base_class
+      singular_name = ActiveModel::Naming.param_key(this_class)
+      plural_name = singular_name.pluralize
 
       {
         :conditions => '',
         :include => [],
-        :order => ('position ASC' if this_class.table_exists? and this_class.column_names.include?('position')),
+        :order => ('position ASC' if this_class.table_exists? && this_class.column_names.include?('position')),
         :paging => true,
         :per_page => false,
-        :redirect_to_url => "main_app.refinery_admin_#{plural_name}_path",
+        :redirect_to_url => "refinery.#{Refinery.route_for_model(class_name.constantize, :plural => true)}",
         :searchable => true,
         :search_conditions => '',
         :sortable => true,
@@ -68,14 +68,14 @@ module Refinery
 
           def create
             # if the position field exists, set this object as last object, given the conditions of this class.
-            if #{class_name}.column_names.include?("position")
+            if #{class_name}.column_names.include?("position") && params[:#{singular_name}][:position].nil?
               params[:#{singular_name}].merge!({
                 :position => ((#{class_name}.maximum(:position, :conditions => #{options[:conditions].inspect})||-1) + 1)
               })
             end
 
             if (@#{singular_name} = #{class_name}.create(params[:#{singular_name}])).valid?
-              (request.xhr? ? flash.now : flash).notice = t(
+              flash.notice = t(
                 'refinery.crudify.created',
                 :what => "'\#{@#{singular_name}.#{options[:title_attribute]}}'"
               )
@@ -87,18 +87,19 @@ module Refinery
                   unless request.xhr?
                     redirect_to :back
                   else
-                    render :partial => "/refinery/message"
+                    render :partial => '/refinery/message'
                   end
                 end
               else
-                render :text => "<script>parent.window.location = '\#{#{options[:redirect_to_url]}}';</script>"
+                self.index
+                @dialog_successful = true
+                render :index
               end
             else
               unless request.xhr?
                 render :action => 'new'
               else
-                render :partial => "/refinery/admin/error_messages",
-                       :locals => {
+                render :partial => '/refinery/admin/error_messages', :locals => {
                          :object => @#{singular_name},
                          :include_object_name => true
                        }
@@ -112,7 +113,7 @@ module Refinery
 
           def update
             if @#{singular_name}.update_attributes(params[:#{singular_name}])
-              (request.xhr? ? flash.now : flash).notice = t(
+              flash.notice = t(
                 'refinery.crudify.updated',
                 :what => "'\#{@#{singular_name}.#{options[:title_attribute]}}'"
               )
@@ -124,18 +125,19 @@ module Refinery
                   unless request.xhr?
                     redirect_to :back
                   else
-                    render :partial => "/refinery/message"
+                    render :partial => '/refinery/message'
                   end
                 end
               else
-                render :text => "<script>parent.window.location = '\#{#{options[:redirect_to_url]}}';</script>"
+                self.index
+                @dialog_successful = true
+                render :index
               end
             else
               unless request.xhr?
                 render :action => 'edit'
               else
-                render :partial => "/refinery/admin/error_messages",
-                       :locals => {
+                render :partial => '/refinery/admin/error_messages', :locals => {
                          :object => @#{singular_name},
                          :include_object_name => true
                        }
@@ -179,7 +181,16 @@ module Refinery
               #{class_name}.per_page
             end
 
-            @#{plural_name} = @#{plural_name}.page(params[:page]).per(per_page)
+            @#{plural_name} = @#{plural_name}.paginate(:page => params[:page], :per_page => per_page)
+          end
+
+          # If the controller is being accessed via an ajax request
+          # then render only the collection of items.
+          def render_partial_response?
+            if request.xhr?
+              render :text => render_to_string(:partial => '#{plural_name}', :layout => false).html_safe,
+                     :layout => 'refinery/flash' and return false
+            end
           end
 
           # Returns a weighted set of results based on the query specified by the user.
@@ -196,6 +207,7 @@ module Refinery
           protected :find_#{singular_name},
                     :find_all_#{plural_name},
                     :paginate_all_#{plural_name},
+                    :render_partial_response?,
                     :search_all_#{plural_name}
         )
 
@@ -207,7 +219,7 @@ module Refinery
                 search_all_#{plural_name} if searching?
                 paginate_all_#{plural_name}
 
-                render :partial => '#{plural_name}' if #{options[:xhr_paging].inspect} && request.xhr?
+                render_partial_response?
               end
             )
           else
@@ -218,6 +230,8 @@ module Refinery
                 else
                   search_all_#{plural_name}
                 end
+
+                render_partial_response?
               end
             )
           end
@@ -228,13 +242,14 @@ module Refinery
               def index
                 paginate_all_#{plural_name}
 
-                render :partial => '#{plural_name}' if #{options[:xhr_paging].inspect} && request.xhr?
+                render_partial_response?
               end
             )
           else
             module_eval %(
               def index
                 find_all_#{plural_name}
+                render_partial_response?
               end
             )
           end
@@ -251,8 +266,11 @@ module Refinery
             def update_positions
               previous = nil
               params[:ul].each do |_, list|
-                list.each do |index, hash|
-                  moved_item_id = hash['id'].split(/#{singular_name}\\_?/)
+                # After we drop Ruby 1.8.x support the following line can be changed back to
+                # list.each do |index, hash|
+                # because there won't be an ordering issue (see https://github.com/refinery/refinerycms/issues/1585)
+                list.sort_by {|k, v| k.to_i}.map { |item| item[1] }.each_with_index do |hash, index|
+                  moved_item_id = hash['id'].split(/#{singular_name}\_?/).reject(&:empty?).first
                   @current_#{singular_name} = #{class_name}.find_by_id(moved_item_id)
 
                   if @current_#{singular_name}.respond_to?(:move_to_root)
@@ -262,7 +280,7 @@ module Refinery
                       @current_#{singular_name}.move_to_root
                     end
                   else
-                    @current_#{singular_name}.update_attribute(:position, index)
+                    @current_#{singular_name}.update_attributes :position => index
                   end
 
                   if hash['children'].present?
@@ -277,9 +295,10 @@ module Refinery
               render :nothing => true
             end
 
-            def update_child_positions(node, #{singular_name})
-              node['children']['0'].each do |_, child|
-                child_id = child['id'].split(/#{singular_name}\_?/)
+            def update_child_positions(_node, #{singular_name})
+              list = _node['children']['0']
+              list.sort_by {|k, v| k.to_i}.map { |item| item[1] }.each_with_index do |child, index|
+                child_id = child['id'].split(/#{singular_name}\_?/).reject(&:empty?).first
                 child_#{singular_name} = #{class_name}.where(:id => child_id).first
                 child_#{singular_name}.move_to_child_of(#{singular_name})
 
@@ -292,15 +311,21 @@ module Refinery
         end
 
         module_eval %(
-          def self.sortable?
-            #{options[:sortable].to_s}
-          end
+          class << self
+            def pageable?
+              #{options[:paging].to_s}
+            end
+            alias_method :paging?, :pageable?
 
-          def self.searchable?
-            #{options[:searchable].to_s}
+            def sortable?
+              #{options[:sortable].to_s}
+            end
+
+            def searchable?
+              #{options[:searchable].to_s}
+            end
           end
         )
-
 
       end
 

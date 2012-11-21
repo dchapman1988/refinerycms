@@ -1,13 +1,13 @@
-module ::Refinery
+module Refinery
   module Admin
-    class PagePartsController < ::Admin::BaseController
+    class PagePartsController < ::Refinery::AdminController
 
       def new
-        render :partial => "/refinery/admin/pages/page_part_field", :locals => {
-          :part => ::Refinery::PagePart.new(:title => params[:title], :body => params[:body]),
-          :new_part => true,
-          :part_index => params[:part_index]
-        }
+        render :partial => '/refinery/admin/pages/page_part_field', :locals => {
+                 :part => ::Refinery::PagePart.new(:title => params[:title], :body => params[:body]),
+                 :new_part => true,
+                 :part_index => params[:part_index]
+               }
       end
 
       def destroy

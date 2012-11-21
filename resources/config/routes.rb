@@ -1,13 +1,9 @@
-::Refinery::Application.routes.draw do
+Refinery::Core::Engine.routes.draw do
+  get '/system/resources/*dragonfly', :to => Dragonfly[:refinery_resources]
 
-  match '/system/resources/*dragonfly', :to => Dragonfly[:resources]
-
-  scope(:path => 'refinery', :as => 'refinery_admin', :module => 'refinery/admin') do
+  namespace :admin, :path => 'refinery' do
     resources :resources, :except => :show do
-      collection do
-        get :insert
-      end
+      get :insert, :on => :collection
     end
   end
-
 end

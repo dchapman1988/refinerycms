@@ -9,9 +9,6 @@ sv:
         description: Refinery dialoger tillägsprogram
     welcome:
       there_are_no_users: Det finns inga användare ännu, så vi skapar en för dig först.
-      remember_admin_location: "Kom ihåg att kontrollpanelen nås via:"
-      lets_start: Okej, låt oss skapa en användare för dig så du kan logga in...
-      continue: Fortsätt...
     crudify:
       created: '%{what} lades till.'
       updated: '%{what} uppdaterades.'
@@ -50,13 +47,17 @@ sv:
         current: Aktuell fil
       search:
         button_text: Sök
-        results_for: Sökresultat för '%{query}'
+        results_for_html: "Sökresultat för &#8216;<em>%{query}</em>&#8217;"
         no_results: Tyvärr, sökningen gav inga träffar.
       delete:
         message: Är du säker på att du vill ta bort '%{title}'?
       error_messages:
         problems_in_following_fields: Det uppstod problem med följande fält
       help: hjälp
+      form_advanced_options_menu:
+        advanced_options: Avancerade alternativ
+        toggle_advanced_options: Klicka för att få tillgång till meta-taggar och menyval
+        save_as_draft: Spara som Utkast
     message:
       close: Stäng
       close_this_message: Stäng detta meddelande
@@ -65,12 +66,12 @@ sv:
     footer:
       copyright: Copyright © %{year} %{site_name}
     no_script:
-      enable_javascript: För att få full funktionalitet på den här sidan behöver JavaScript vara aktiverat i din webbläsare.
+      enable_javascript_html: För att få full funktionalitet på den här sidan behöver JavaScript vara aktiverat i din webbläsare.
       here_are: Här är
-      instructions_enable_javascript: instruktioner om hur du aktiverar JavaScript i din webbläsare
+      instructions_enable_javascript_html: instruktioner om hur du aktiverar JavaScript i din webbläsare
   time:
     formats:
       short: "%A, %d %B %Y"
-  pagination:
-    next: "&raquo;"
-    previous: "&laquo;"
+  will_paginate:
+    previous_label: "&laquo;"
+    next_label: "&raquo;"

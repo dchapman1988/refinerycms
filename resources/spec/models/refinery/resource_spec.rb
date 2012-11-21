@@ -2,11 +2,7 @@ require 'spec_helper'
 
 module Refinery
   describe Resource do
-
-    let(:resource) do
-      Resource.create!(:id => 1,
-                       :file => File.new(File.expand_path('../../../uploads/refinery_is_awesome.txt', __FILE__)))
-    end
+    let(:resource) { FactoryGirl.create(:resource) }
 
     context "with valid attributes" do
       it "should create successfully" do
@@ -42,20 +38,20 @@ module Refinery
 
     describe ".per_page" do
       context "dialog is true" do
-        it "returns resource count specified by PAGES_PER_DIALOG constant" do
-          Resource.per_page(true).should == Resource::PAGES_PER_DIALOG
+        it "returns resource count specified by Resources.pages_per_dialog option" do
+          Resource.per_page(true).should == Resources.pages_per_dialog
         end
       end
 
       context "dialog is false" do
-        it "returns resource count specified by PAGES_PER_ADMIN_INDEX constant" do
-          Resource.per_page.should == Resource::PAGES_PER_ADMIN_INDEX
+        it "returns resource count specified by Resources.pages_per_admin_index constant" do
+          Resource.per_page.should == Resources.pages_per_admin_index
         end
       end
     end
 
     describe ".create_resources" do
-      let(:file) { File.new(File.expand_path('../../../uploads/refinery_is_awesome.txt', __FILE__)) }
+      let(:file) { Refinery.roots(:'refinery/resources').join("spec/fixtures/refinery_is_awesome.txt") }
 
       context "only one resource uploaded" do
         it "returns an array containing one resource" do
@@ -74,7 +70,61 @@ module Refinery
           r.should be_an_instance_of(Resource)
         end
       end
+
+      specify "each returned array item should be passed form parameters" do
+        params = {:file => [file, file, file], :fake_param => 'blah'}
+
+        Resource.should_receive(:create).exactly(3).times.with({:file => file, :fake_param => 'blah'})
+        Resource.create_resources(params)
+      end
     end
 
+    describe "validations" do
+      describe "valid #file" do
+        before do
+          @file = Refinery.roots(:'refinery/resources').join("spec/fixtures/refinery_is_awesome.txt")
+          Resources.max_file_size = (File.read(@file).size + 10)
+        end
+
+        it "should be valid when size does not exceed .max_file_size" do
+          Resource.new(:file => @file).should be_valid
+        end
+      end
+
+      describe "too large #file" do
+        before do
+          @file = Refinery.roots(:'refinery/resources').join("spec/fixtures/refinery_is_awesome.txt")
+          Resources.max_file_size = (File.read(@file).size - 10)
+          @resource = Resource.new(:file => @file)
+        end
+
+        it "should not be valid when size exceeds .max_file_size" do
+          @resource.should_not be_valid
+        end
+
+        it "should contain an error message" do
+          @resource.valid?
+          @resource.errors.should_not be_empty
+          @resource.errors[:file].should == Array(::I18n.t(
+            'too_big', :scope => 'activerecord.errors.models.refinery/resource',
+                       :size => Resources.max_file_size
+          ))
+        end
+      end
+
+      describe "invalid argument for #file" do
+        before do
+          @resource = Resource.new
+        end
+
+        it "has an error message" do
+          @resource.valid?
+          @resource.errors.should_not be_empty
+          @resource.errors[:file].should == Array(::I18n.t(
+            'blank', :scope => 'activerecord.errors.models.refinery/resource'
+          ))
+        end
+      end
+    end
   end
 end

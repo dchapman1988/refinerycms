@@ -1,24 +1,21 @@
-module ::Refinery
-  class Resource < ActiveRecord::Base
+require 'dragonfly'
+require 'acts_as_indexed'
+
+module Refinery
+  class Resource < Refinery::Core::BaseModel
+    ::Refinery::Resources::Dragonfly.setup!
+
+    include Resources::Validators
 
     attr_accessible :id, :file
-    # What is the max resource size a user can upload
-    MAX_SIZE_IN_MB = 50
 
     resource_accessor :file
 
     validates :file, :presence => true
-    validates_size_of :file, :maximum => MAX_SIZE_IN_MB.megabytes,
-                             :message => :too_big, :size => MAX_SIZE_IN_MB
+    validates_with FileSizeValidator
 
     # Docs for acts_as_indexed http://github.com/dougal/acts_as_indexed
     acts_as_indexed :fields => [:file_name, :title, :type_of_content]
-
-    # when a dialog pops up with resources, how many resources per page should there be
-    PAGES_PER_DIALOG = 12
-
-    # when listing resources out in the admin area, how many resources should show per page
-    PAGES_PER_ADMIN_INDEX = 20
 
     delegate :ext, :size, :mime_type, :url, :to => :file
 
@@ -36,7 +33,7 @@ module ::Refinery
     class << self
       # How many resources per page should be displayed?
       def per_page(dialog = false)
-        dialog ? PAGES_PER_DIALOG : PAGES_PER_ADMIN_INDEX
+        dialog ? Resources.pages_per_dialog : Resources.pages_per_admin_index
       end
 
       def create_resources(params)
@@ -46,7 +43,7 @@ module ::Refinery
           resources << create(params)
         else
           params[:file].each do |resource|
-            resources << create(:file => resource)
+            resources << create({:file => resource}.merge(params.except(:file)))
           end
         end
 

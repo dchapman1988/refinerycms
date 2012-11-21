@@ -9,9 +9,6 @@ zh-CN:
         description: Refinery 对话框插件
     welcome:
       there_are_no_users: 现在还没有用户, 因此我们先来设置一个.
-      remember_admin_location: "记住你的 Refinery 后台管理页面在:"
-      lets_start: 好了, 让我们协助您设置, 然后您就能够登录了...
-      continue: 继续...
     crudify:
       created: '%{what} 添加成功.'
       updated: '%{what} 编辑成功.'
@@ -50,13 +47,17 @@ zh-CN:
         current: 当前文件
       search:
         button_text: 搜索
-        results_for: 搜索 '%{query}' 的结果
+        results_for_html: "搜索 &#8216;<em>%{query}</em>&#8217; 的结果"
         no_results: 对不起, 没有找到结果
       delete:
         message: 您确认要删除 '%{title}'?
       error_messages:
         problems_in_following_fields: 以下字段存在问题
       help: 帮助
+      form_advanced_options_menu:
+        advanced_options: 高级选项
+        toggle_advanced_options: meta 标签设定与菜单选项
+        save_as_draft: 另存为草稿
     message:
       close: 关闭
       close_this_message: 关闭这条信息
@@ -65,12 +66,12 @@ zh-CN:
     footer:
       copyright: 版权所有 © %{year} %{site_name}
     no_script:
-      enable_javascript: 这个页面需要打开Javascript以执行所有功能.
+      enable_javascript_html: 这个页面需要打开Javascript以执行所有功能.
       here_are: 这里是
-      instructions_enable_javascript: 打开Javascript的指引
+      instructions_enable_javascript_html: 打开Javascript的指引
   time:
     formats:
       short: "%A, %d %B %Y"
-  pagination:
-    next: "&raquo;"
-    previous: "&laquo;"
+  will_paginate:
+    previous_label: "&laquo;"
+    next_label: "&raquo;"

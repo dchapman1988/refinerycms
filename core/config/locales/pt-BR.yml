@@ -9,9 +9,6 @@ pt-BR:
         description: Refinery dialogs plugin
     welcome:
       there_are_no_users: "Ainda não existem usuários, então primeiro vamos te deixar pronto."
-      remember_admin_location: "Lembre-se que sua área de admin fica em:"
-      lets_start: "Beleza, vamos te cadastrar pra que você possa fazer login..."
-      continue: "Continuar..."
     crudify:
       created: "%{what} foi criado com sucesso"
       updated: "%{what} foi atualizado com sucesso"
@@ -50,13 +47,17 @@ pt-BR:
         current: Arquivo atual
       search:
         button_text: Buscar
-        results_for: "Resultados da busca por '%{query}'"
+        results_for_html: "Resultados da busca por &#8216;<em>%{query}</em>&#8217;"
         no_results: "Desculpe, nenhum resultado foi encontrado."
       delete:
         message: Você tem certeza que deseja apagar '%{title}'?
       error_messages:
         problems_in_following_fields: Há problemas com os seguintes campos
       help: ajuda
+      form_advanced_options_menu:
+        advanced_options: Opções avançadas
+        toggle_advanced_options: Clique aqui para acessar as configurações de meta tag e opções do menu
+        save_as_draft: Salvar como rascunho
     message:
       close: Fechar
       close_this_message: Fechar esta mensagem
@@ -65,9 +66,9 @@ pt-BR:
     footer:
       copyright: Copyright © %{year} %{site_name}
     no_script:
-      enable_javascript: Para ter todas as funcionalidades dessa página é necessário ter JavaScript habilitado.
+      enable_javascript_html: Para ter todas as funcionalidades dessa página é necessário ter JavaScript habilitado.
       here_are: Aqui estão as
-      instructions_enable_javascript: instruções para habilitar JavaScript no seu navegador.
-  pagination:
-    next: "&raquo;"
-    previous: "&laquo;"
+      instructions_enable_javascript_html: instruções para habilitar JavaScript no seu navegador.
+  will_paginate:
+    previous_label: "&laquo;"
+    next_label: "&raquo;"

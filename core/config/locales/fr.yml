@@ -1,5 +1,8 @@
 fr:
   refinery:
+    js:
+      admin:
+        confirm_changes: Toute modification sera perdue. Êtes-vous sûr de vouloir de vouloir continuer ?
     plugins:
       refinery_core:
         title: Refinery
@@ -9,9 +12,6 @@ fr:
         description: Plugin de boîtes de dialogue pour Refinery
     welcome:
       there_are_no_users: Il n'y actuellement aucun utilisateur enregistré, nous allons donc vous enregistrer pour commencer.
-      remember_admin_location: "Souvenez-vous que votre tableau de bord se situe à l'adresse : "
-      lets_start: Procédons à votre enregistrement afin que vous puissiez vous identifier...
-      continue: Continuer...
     crudify:
       created: '%{what} a été correctement créé.'
       updated: '%{what} a été correctement mis à jour.'
@@ -50,13 +50,19 @@ fr:
         current: Fichier courrant
       search:
         button_text: Chercher
-        results_for: "Résultats de la recherche : '%{query}'"
+        results_for_html: "Résultats de la recherche &#8216;<em>%{query}</em>&#8217;"
         no_results: Aucun résultat ne correspond à votre recherche
+        cancel_search: 'Annuler la recherche'
+        search_input_notice: "Entrez ici le texte recherché. La longueur minimale est de 3 caractères."
       delete:
-        message: Etes-vous sûr de vouloir supprimer '%{title}'?
+        message: "Êtes-vous sûr de vouloir supprimer '%{title}'?"
       error_messages:
         problems_in_following_fields: Les champs suivants comportent des problèmes
       help: aide
+      form_advanced_options_menu:
+        advanced_options: Options avancées
+        toggle_advanced_options: Cliquer ici pour paraméter les étiquettes et accéder au menu des options
+        save_as_draft: Enregistrer comme brouillon
     message:
       close: Fermer
       close_this_message: Fermer ce message
@@ -65,9 +71,12 @@ fr:
     footer:
       copyright: Copyright © %{year} %{site_name}
     no_script:
-      enable_javascript: Pour obtenir l'ensemble des fonctionnalités de cette page il est nécessaire d'activer JavaScript.
+      enable_javascript_html: Pour obtenir l'ensemble des fonctionnalités de cette page il est nécessaire d'activer JavaScript.
       here_are: Ici sont les
-      instructions_enable_javascript: instructions pour activer JavaScript dans votre navigateur
-  pagination:
-    next: "&raquo;"
-    previous: "&laquo;"
+      instructions_enable_javascript_html: instructions pour activer JavaScript dans votre navigateur
+  time:
+    formats:
+      short: "%A, %d %B %Y"
+  will_paginate:
+    previous_label: "&laquo;"
+    next_label: "&raquo;"

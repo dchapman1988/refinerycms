@@ -9,9 +9,6 @@ vi:
         description: Refinery dialogs plugin
     welcome:
       there_are_no_users: Hiện không có user nào, chúng tôi sẽ tiến hành chi đặt cho bạn trước.
-      remember_admin_location: "Hãy nhớ rằng trang quản trị Refinery được đặt tại:"
-      lets_start: Bây giờ hãy cùng thiết lập cấu hình để bạn có thể đăng nhập hệ thống…
-      continue: Tiếp tục...
     crudify:
       created: '%{what} vừa được thêm vào.'
       updated: '%{what} vừa được cập nhật.'
@@ -50,13 +47,17 @@ vi:
         current: File hiện tại
       search:
         button_text: Tìm kiếm
-        results_for: Các kết quả tìm kiếm với truy vấn '%{query}'
+        results_for_html: "Các kết quả tìm kiếm với truy vấn &#8216;<em>%{query}</em>&#8217;"
         no_results: Rất tiếc, không có kết quả nào được tìm thấy
       delete:
         message: Bạn có thực sự chắc chắn khi xóa bỏ '%{title}' không?
       error_messages:
         problems_in_following_fields: Có lỗi xảy ra với những trường sau
       help: giúp đỡ
+      form_advanced_options_menu:
+        advanced_options: Các tùy chọn nâng cao
+        toggle_advanced_options: Mở các thiết lập meta-tag và menu
+        save_as_draft: Lưu trữ dưới dạng bản thảo
     message:
       close: Đóng
       close_this_message: Đóng thông báo này
@@ -65,12 +66,12 @@ vi:
     footer:
       copyright: Copyright © %{year} %{site_name}
     no_script:
-      enable_javascript: Để website có thể hoạt động với đầy đủ các tính năng, bạn cần phải cho phép JavaScript hoạt động.
+      enable_javascript_html: Để website có thể hoạt động với đầy đủ các tính năng, bạn cần phải cho phép JavaScript hoạt động.
       here_are: Đây là
-      instructions_enable_javascript: các chỉ dẫn cách kích hoạt cho Javascript hoạt động.
+      instructions_enable_javascript_html: các chỉ dẫn cách kích hoạt cho Javascript hoạt động.
   time:
     formats:
       short: "%A, %d %B %Y"
-  pagination:
-    next: "&raquo;"
-    previous: "&laquo;"
+  will_paginate:
+    previous_label: "&laquo;"
+    next_label: "&raquo;"

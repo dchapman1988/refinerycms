@@ -12,9 +12,6 @@ en:
         description: Refinery dialogs plugin
     welcome:
       there_are_no_users: "There are no users yet, so we'll set you up first."
-      remember_admin_location: "Remember your Refinery admin area is at:"
-      lets_start: Alright let's get you setup so you can login...
-      continue: Continue...
     crudify:
       created: '%{what} was successfully added.'
       updated: '%{what} was successfully updated.'
@@ -40,9 +37,9 @@ en:
         delete: Remove
         close: Close
       image_picker:
-        none_selected: 'There is currently no %{what} selected, please click here to add one.'
-        remove_current: 'Remove current %{what}'
-        change: Click here to pick a image
+        none_selected: There is currently no image selected, please click here to add one.
+        remove_current: Remove current image
+        change: Click here to pick an image
         show: Show
       resource_picker:
         download_current: Download current file
@@ -53,13 +50,19 @@ en:
         current: Current File
       search:
         button_text: Search
-        results_for: "Search results for '%{query}'"
+        results_for_html: "Search results for &#8216;<em>%{query}</em>&#8217;"
         no_results: 'Sorry, no results found'
+        cancel_search: 'Cancel search'
+        search_input_notice: "Put here string which you're looking for. Minimal length is 3 chars."
       delete:
         message: "Are you sure you want to remove '%{title}'?"
       error_messages:
         problems_in_following_fields: There were problems with the following fields
       help: help
+      form_advanced_options_menu:
+        advanced_options: Advanced options
+        toggle_advanced_options: Toggle advanced options
+        save_as_draft: Save as Draft
     message:
       close: Close
       close_this_message: Close this message
@@ -68,12 +71,12 @@ en:
     footer:
       copyright: "Copyright © %{year} %{site_name}"
     no_script:
-      enable_javascript: For full functionality of this page it is necessary to enable JavaScript.
+      enable_javascript_html: For full functionality of this page it is necessary to enable JavaScript.
       here_are: Here are the
-      instructions_enable_javascript: instructions for how to enable JavaScript in your web browser
+      instructions_enable_javascript_html: instructions for how to enable JavaScript in your web browser
   time:
     formats:
       short: "%A, %d %B %Y"
-  pagination:
-    next: "&raquo;"
-    previous: "&laquo;"
+  will_paginate:
+    previous_label: "&laquo;"
+    next_label: "&raquo;"

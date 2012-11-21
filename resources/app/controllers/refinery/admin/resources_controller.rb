@@ -1,7 +1,6 @@
-module ::Refinery
+module Refinery
   module Admin
-    class ResourcesController < ::Admin::BaseController
-
+    class ResourcesController < ::Refinery::AdminController
 
       crudify :'refinery/resource',
               :order => "updated_at DESC",
@@ -12,7 +11,7 @@ module ::Refinery
       def new
         @resource = Resource.new if @resource.nil?
 
-        @url_override = main_app.refinery_admin_resources_path(:dialog => from_dialog?)
+        @url_override = refinery.admin_resources_path(:dialog => from_dialog?)
       end
 
       def create
@@ -21,11 +20,12 @@ module ::Refinery
 
         unless params[:insert]
           if @resources.all?(&:valid?)
-            flash.notice = t('created', :scope => 'refinery.crudify', :what => "'#{@resources.collect{|r| r.title}.join("', '")}'")
+            flash.notice = t('created', :scope => 'refinery.crudify', :what => "'#{@resources.map(&:title).join("', '")}'")
             unless from_dialog?
-              redirect_to main_app.url_for(:action => 'index')
+              redirect_to refinery.admin_resources_path
             else
-              render :text => "<script>parent.window.location = '#{main_app.refinery_admin_resources_path}';</script>"
+              @dialog_successful = true
+              render :nothing => true, :layout => true
             end
           else
             self.new # important for dialogs
@@ -36,8 +36,6 @@ module ::Refinery
             @resource_id = @resources.detect(&:persisted?).id
             @resource = nil
 
-            redirect_to request.query_parameters.merge(:action => 'insert')
-          else
             self.insert
           end
         end
@@ -46,7 +44,7 @@ module ::Refinery
       def insert
         self.new if @resource.nil?
 
-        @url_override = main_app.refinery_admin_resources_path(request.query_parameters.merge(:insert => true))
+        @url_override = refinery.admin_resources_path(request.query_parameters.merge(:insert => true))
 
         if params[:conditions].present?
           extra_condition = params[:conditions].split(',')
@@ -79,10 +77,9 @@ module ::Refinery
       end
 
       def paginate_resources(conditions={})
-        @resources = Resource.page(params[:page]).
-                              where(conditions).
-                              order('created_at DESC').
-                              per(Resource.per_page(from_dialog?))
+        @resources = Resource.where(conditions).
+                              paginate(:page => params[:page], :per_page => Resource.per_page(from_dialog?)).
+                              order('created_at DESC')
       end
 
     end
