@@ -1,13 +1,12 @@
-source 'http://rubygems.org'
+source 'https://rubygems.org'
 
 gemspec
 
 # Add i18n support.
 gem 'refinerycms-i18n', '~> 2.1.0.dev', :git => 'git://github.com/refinery/refinerycms-i18n.git'
 
-# Fixes uniqueness constraint on translated columns.
-# See: https://github.com/svenfuchs/globalize3/pull/121
-gem 'globalize3', :git => 'git://github.com/svenfuchs/globalize3.git', :branch => 'master'
+# Add support for refinerycms-acts-as-indexed
+gem 'refinerycms-acts-as-indexed', :git => 'git://github.com/refinery/refinerycms-acts-as-indexed.git'
 
 gem 'quiet_assets', :group => :development
 
@@ -17,12 +16,13 @@ unless ENV['TRAVIS']
   gem 'sqlite3', :platform => :ruby
 end
 
-unless ENV['TRAVIS'] && ENV['DB'] != 'mysql'
+if !ENV['TRAVIS'] || ENV['DB'] == 'mysql'
   gem 'activerecord-jdbcmysql-adapter', :platform => :jruby
+  gem 'jdbc-mysql', '= 5.1.13', :platform => :jruby
   gem 'mysql2', :platform => :ruby
 end
 
-unless ENV['TRAVIS'] && ENV['DB'] != 'postgresql'
+if !ENV['TRAVIS'] || ENV['DB'] == 'postgresql'
   gem 'activerecord-jdbcpostgresql-adapter', :platform => :jruby
   gem 'pg', :platform => :ruby
 end
